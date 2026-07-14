@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IPMA Revision Strategy — Zae</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a26;
+    --border: #2a2a3a;
+    --accent: #c8a96e;
+    --accent2: #7c9ce8;
+    --accent3: #8ee3b4;
+    --text: #e8e4dc;
+    --muted: #7a7a8a;
+    --perspective: #e8a47c;
+    --people: #a47ce8;
+    --practice: #7ce8c4;
+    --danger: #e87c8a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Instrument Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.6;
+  }
+
+  /* Header */
+  .header {
+    border-bottom: 1px solid var(--border);
+    padding: 2rem 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, #0a0a0f 0%, #12121a 100%);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: blur(12px);
+  }
+
+  .header-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+  }
+
+  .header-title span {
+    color: var(--muted);
+    font-style: italic;
+    font-weight: 700;
+    font-size: 1rem;
+  }
+
+  .exam-badges {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    padding: 0.35rem 0.85rem;
+    border-radius: 2px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .badge-ipma { background: rgba(200, 169, 110, 0.15); color: var(--accent); border: 1px solid rgba(200,169,110,0.3); }
+  .badge-uni { background: rgba(124, 156, 232, 0.15); color: var(--accent2); border: 1px solid rgba(124,156,232,0.3); }
+
+  /* Nav tabs */
+  .nav {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    padding: 0 3rem;
+    background: var(--surface);
+    overflow-x: auto;
+  }
+
+  .nav-tab {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    color: var(--muted);
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+    background: none;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+  }
+
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* Main content */
+  .main { padding: 2.5rem 3rem; max-width: 1200px; margin: 0 auto; }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* Overview grid */
+  .overview-hero {
+    margin-bottom: 2.5rem;
+  }
+
+  .hero-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.8rem;
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 0.75rem;
+    color: var(--text);
+  }
+
+  .hero-text em {
+    color: var(--accent);
+    font-style: italic;
+  }
+
+  .hero-sub {
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    max-width: 600px;
+  }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin: 2rem 0;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .stat-box {
+    background: var(--surface);
+    padding: 1.5rem;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--accent);
+    display: block;
+  }
+
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-top: 0.3rem;
+  }
+
+  /* Competence area cards */
+  .ca-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    margin: 2rem 0;
+  }
+
+  .ca-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.75rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+
+  .ca-card:hover { transform: translateY(-2px); }
+
+  .ca-card.perspective { border-top: 3px solid var(--perspective); }
+  .ca-card.people { border-top: 3px solid var(--people); }
+  .ca-card.practice { border-top: 3px solid var(--practice); }
+
+  .ca-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .ca-card.perspective .ca-num { color: var(--perspective); }
+  .ca-card.people .ca-num { color: var(--people); }
+  .ca-card.practice .ca-num { color: var(--practice); }
+
+  .ca-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+
+  .ca-desc {
+    font-size: 0.83rem;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+  }
+
+  .ce-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .ce-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    padding: 0.25rem 0.55rem;
+    border-radius: 2px;
+    letter-spacing: 0.05em;
+  }
+
+  .ca-card.perspective .ce-tag { background: rgba(232,164,124,0.12); color: var(--perspective); }
+  .ca-card.people .ce-tag { background: rgba(164,124,232,0.12); color: var(--people); }
+  .ca-card.practice .ce-tag { background: rgba(124,232,196,0.12); color: var(--practice); }
+
+  /* Timeline section */
+  .timeline-header {
+    margin-bottom: 2rem;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+  }
+
+  .section-sub {
+    color: var(--muted);
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .timeline {
+    position: relative;
+    padding-left: 2rem;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--accent), var(--accent2), var(--accent3));
+  }
+
+  .phase {
+    position: relative;
+    margin-bottom: 2.5rem;
+  }
+
+  .phase::before {
+    content: '';
+    position: absolute;
+    left: -2.4rem;
+    top: 0.6rem;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+  }
+
+  .phase-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .phase-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    background: rgba(200,169,110,0.1);
+    padding: 0.25rem 0.65rem;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+
+  .phase-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+
+  .phase-weeks {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+
+  .phase-body {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.5rem;
+  }
+
+  .phase-items {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .phase-items li {
+    display: flex;
+    gap: 0.75rem;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: var(--text);
+  }
+
+  .phase-items li::before {
+    content: '→';
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    flex-shrink: 0;
+    margin-top: 0.05rem;
+  }
+
+  .phase-goal {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--accent3);
+    letter-spacing: 0.05em;
+  }
+
+  /* Topics section */
+  .topics-filter {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.45rem 1rem;
+    border-radius: 2px;
+    cursor: pointer;
+    background: var(--surface);
+    color: var(--muted);
+    border: 1px solid var(--border);
+    transition: all 0.15s;
+  }
+
+  .filter-btn:hover { color: var(--text); border-color: var(--muted); }
+  .filter-btn.active-filter { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+  .filter-btn.perspective-f.active-filter { background: var(--perspective); border-color: var(--perspective); }
+  .filter-btn.people-f.active-filter { background: var(--people); border-color: var(--people); }
+  .filter-btn.practice-f.active-filter { background: var(--practice); border-color: var(--practice); }
+
+  .topics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1rem;
+  }
+
+  .topic-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.25rem;
+    transition: border-color 0.2s, transform 0.15s;
+    cursor: default;
+  }
+
+  .topic-card:hover { transform: translateY(-1px); }
+
+  .topic-card.perspective-t { border-left: 3px solid var(--perspective); }
+  .topic-card.people-t { border-left: 3px solid var(--people); }
+  .topic-card.practice-t { border-left: 3px solid var(--practice); }
+
+  .topic-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.6rem;
+  }
+
+  .topic-ce {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  .topic-priority {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 2px;
+  }
+
+  .p-high { background: rgba(232,124,138,0.15); color: var(--danger); }
+  .p-med { background: rgba(200,169,110,0.15); color: var(--accent); }
+  .p-low { background: rgba(122,122,138,0.15); color: var(--muted); }
+
+  .topic-name {
+    font-size: 0.92rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+  }
+
+  .topic-tools {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* Techniques section */
+  .techniques-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+
+  .technique-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.75rem;
+  }
+
+  .technique-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .technique-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--accent);
+  }
+
+  .technique-desc {
+    font-size: 0.84rem;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  .technique-how {
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--text);
+    background: var(--surface2);
+    padding: 1rem;
+    border-radius: 3px;
+    border-left: 2px solid var(--accent2);
+  }
+
+  /* Tracker */
+  .tracker-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  .tracker-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.5rem;
+  }
+
+  .tracker-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+
+  .ce-checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .ce-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.75rem;
+    border-radius: 3px;
+    background: var(--surface2);
+    cursor: pointer;
+    transition: background 0.15s;
+    user-select: none;
+  }
+
+  .ce-item:hover { background: var(--border); }
+  .ce-item.done { opacity: 0.5; }
+  .ce-item.done .ce-item-name { text-decoration: line-through; }
+
+  .ce-checkbox {
+    width: 14px;
+    height: 14px;
+    border: 1px solid var(--muted);
+    border-radius: 2px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    transition: all 0.15s;
+  }
+
+  .ce-item.done .ce-checkbox {
+    background: var(--accent3);
+    border-color: var(--accent3);
+    color: var(--bg);
+  }
+
+  .ce-item-code {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    flex-shrink: 0;
+    width: 45px;
+  }
+
+  .ce-item-name {
+    font-size: 0.8rem;
+    line-height: 1.3;
+    flex: 1;
+  }
+
+  .progress-bar-wrap {
+    background: var(--surface2);
+    height: 6px;
+    border-radius: 3px;
+    margin: 1rem 0 0.5rem;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent3), var(--accent2));
+    border-radius: 3px;
+    transition: width 0.3s ease;
+  }
+
+  .progress-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    text-align: right;
+  }
+
+  /* Tips section */
+  .tips-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+
+  .tip-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.5rem;
+  }
+
+  .tip-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.75rem;
+    color: var(--accent2);
+  }
+
+  .tip-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 0.6rem;
+  }
+
+  .tip-body {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  /* Divider */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2rem 0;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+
+  /* Weekly schedule box */
+  .weekly-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.75rem;
+    margin: 1.5rem 0;
+  }
+
+  .weekly-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--accent);
+  }
+
+  .day-row {
+    display: flex;
+    gap: 1rem;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+    font-size: 0.84rem;
+  }
+
+  .day-row:last-child { border-bottom: none; }
+
+  .day-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    width: 80px;
+    flex-shrink: 0;
+    padding-top: 0.1rem;
+  }
+
+  .day-tasks {
+    flex: 1;
+    line-height: 1.5;
+    color: var(--text);
+  }
+
+  .day-time {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--accent2);
+    white-space: nowrap;
+    padding-top: 0.1rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .header { padding: 1.25rem 1.5rem; }
+    .nav { padding: 0 1.5rem; }
+    .main { padding: 1.5rem; }
+    .ca-grid, .techniques-grid, .tracker-grid, .tips-grid { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .hero-text { font-size: 1.8rem; }
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section.active > * {
+    animation: fadeUp 0.35s ease both;
+  }
+
+  .section.active > *:nth-child(2) { animation-delay: 0.05s; }
+  .section.active > *:nth-child(3) { animation-delay: 0.1s; }
+  .section.active > *:nth-child(4) { animation-delay: 0.15s; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div>
+    <div class="header-title">IPMA® Revision HQ <span>— ICB4 Level D/Basic</span></div>
+  </div>
+  <div class="exam-badges">
+    <div class="badge badge-ipma">📝 Mock — July 2026</div>
+    <div class="badge badge-ipma">📅 IPMA + Uni — Sept 2026</div>
+  </div>
+</header>
+
+<nav class="nav">
+  <button class="nav-tab active" onclick="showTab('overview')">Overview</button>
+  <button class="nav-tab" onclick="showTab('timeline')">Phase Plan</button>
+  <button class="nav-tab" onclick="showTab('topics')">All Topics</button>
+  <button class="nav-tab" onclick="showTab('techniques')">Study Methods</button>
+  <button class="nav-tab" onclick="showTab('tracker')">Progress Tracker</button>
+  <button class="nav-tab" onclick="showTab('tips')">Exam Tips</button>
+</nav>
+
+<main class="main">
+
+  <!-- OVERVIEW -->
+  <section id="overview" class="section active">
+    <div class="overview-hero">
+      <h1 class="hero-text">Your path to an <em>outstanding</em> IPMA grade.</h1>
+      <p class="hero-sub">This guide is built directly from the Dittmann IPMA® ICB4 textbook. It covers all 3 competence areas, 28 CEs, and maps out a week-by-week revision plan aligned to your July mock, and both official IPMA and Uni exams in September.</p>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-box">
+        <span class="stat-num">339</span>
+        <span class="stat-label">Pages in the guide</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num">28</span>
+        <span class="stat-label">Competence elements</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num">3</span>
+        <span class="stat-label">Competence areas</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num">~20</span>
+        <span class="stat-label">Weeks to Sept exams</span>
+      </div>
+    </div>
+
+    <div class="section-label">The 3 ICB4 Competence Areas</div>
+    <div class="ca-grid">
+      <div class="ca-card perspective">
+        <div class="ca-num">Area 1 · Ch. 1</div>
+        <div class="ca-title">Perspective</div>
+        <div class="ca-desc">The external context a project operates within — strategy, governance, compliance, power, culture. These are the "why" and "within what" of project management.</div>
+        <div class="ce-tags">
+          <span class="ce-tag">4.3.1 Strategy</span>
+          <span class="ce-tag">4.3.2 Governance</span>
+          <span class="ce-tag">4.3.3 Compliance</span>
+          <span class="ce-tag">4.3.4 Power</span>
+          <span class="ce-tag">4.3.5 Culture</span>
+        </div>
+      </div>
+      <div class="ca-card people">
+        <div class="ca-num">Area 2 · Ch. 2</div>
+        <div class="ca-title">People</div>
+        <div class="ca-desc">The personal and interpersonal competences of the project manager — self-awareness, communication, leadership, teamwork, negotiation, and more.</div>
+        <div class="ce-tags">
+          <span class="ce-tag">4.4.1 Self-reflection</span>
+          <span class="ce-tag">4.4.2 Integrity</span>
+          <span class="ce-tag">4.4.3 Communication</span>
+          <span class="ce-tag">4.4.4 Relations</span>
+          <span class="ce-tag">4.4.5 Leadership</span>
+          <span class="ce-tag">4.4.6 Teamwork</span>
+          <span class="ce-tag">4.4.7 Conflict</span>
+          <span class="ce-tag">4.4.8 Resourcefulness</span>
+          <span class="ce-tag">4.4.9 Negotiation</span>
+          <span class="ce-tag">4.4.10 Results</span>
+        </div>
+      </div>
+      <div class="ca-card practice">
+        <div class="ca-num">Area 3 · Ch. 3</div>
+        <div class="ca-title">Practice</div>
+        <div class="ca-desc">The technical project management methods — scope, time, cost, risk, quality, stakeholders, procurement, and how to run a project from init to closure.</div>
+        <div class="ce-tags">
+          <span class="ce-tag">4.5.1 Design</span>
+          <span class="ce-tag">4.5.2 Requirements</span>
+          <span class="ce-tag">4.5.3 Scope</span>
+          <span class="ce-tag">4.5.4 Time</span>
+          <span class="ce-tag">4.5.5 Org</span>
+          <span class="ce-tag">4.5.6 Quality</span>
+          <span class="ce-tag">4.5.7 Finance</span>
+          <span class="ce-tag">4.5.8 Resources</span>
+          <span class="ce-tag">4.5.9 Procurement</span>
+          <span class="ce-tag">4.5.10 Plan & Control</span>
+          <span class="ce-tag">4.5.11 Risk</span>
+          <span class="ce-tag">4.5.12 Stakeholders</span>
+          <span class="ce-tag">4.5.13 Change</span>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+    <div class="section-label">Suggested Weekly Schedule (fits around full-time work)</div>
+    <div class="weekly-box">
+      <div class="weekly-title">A realistic week in revision mode</div>
+      <div class="day-row">
+        <div class="day-name">Monday</div>
+        <div class="day-tasks">Read 1 CE from the textbook. Highlight key definitions, models, and frameworks.</div>
+        <div class="day-time">30–45 min</div>
+      </div>
+      <div class="day-row">
+        <div class="day-name">Tuesday</div>
+        <div class="day-tasks">Create flashcards or a 1-page mind map for yesterday's CE.</div>
+        <div class="day-time">20–30 min</div>
+      </div>
+      <div class="day-row">
+        <div class="day-name">Wednesday</div>
+        <div class="day-tasks">Read the next CE. Link it to the first one — can you spot connections?</div>
+        <div class="day-time">30–45 min</div>
+      </div>
+      <div class="day-row">
+        <div class="day-name">Thursday</div>
+        <div class="day-tasks">Active recall: close the book, write down everything you know about the week's CEs.</div>
+        <div class="day-time">20–30 min</div>
+      </div>
+      <div class="day-row">
+        <div class="day-name">Friday</div>
+        <div class="day-tasks">Rest or light review — re-read your notes from Mon/Wed if you have energy.</div>
+        <div class="day-time">Optional</div>
+      </div>
+      <div class="day-row">
+        <div class="day-name">Weekend</div>
+        <div class="day-tasks">Longer session: practice questions, essay planning, or topic deep-dives on harder CEs. Aim for one full mock question answered in exam conditions.</div>
+        <div class="day-time">60–90 min</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TIMELINE -->
+  <section id="timeline" class="section">
+    <div class="timeline-header">
+      <h2 class="section-title">Phase-by-Phase Revision Plan</h2>
+      <p class="section-sub">Built around your three key dates: July mock exam, then both the official IPMA and Uni exams in September. You have ~20 weeks — use the mock as a diagnostic, not a destination.</p>
+    </div>
+
+    <div class="timeline">
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-label">Phase 1</span>
+          <span class="phase-title">Foundation — Map the Terrain</span>
+          <span class="phase-weeks">Weeks 1–3 · Now → Mid-May</span>
+        </div>
+        <div class="phase-body">
+          <ul class="phase-items">
+            <li>Read Chapter 1 (Perspective) fully — focus on definitions of project, PM, strategy, governance, compliance. These are the most heavily tested basics.</li>
+            <li>Create a master glossary document: every key term from Ch. 1 defined in your own words. This forces active processing.</li>
+            <li>Start Ch. 2 (People) — cover 4.4.1 to 4.4.5 (Self-reflection, Integrity, Communication, Relationships, Leadership). Models like Johari Window, Maslow, Tuckman are IPMA favourites.</li>
+            <li>Draw a hand-drawn mind map of the full ICB4 structure — 3 areas, all CE codes. Pin it somewhere visible.</li>
+            <li>Mark any topics in the book labelled "Basic Certificate" — these are the highest-priority for the official exam.</li>
+          </ul>
+          <div class="phase-goal">✓ End goal: You can recall all CE codes, explain what each area covers, and define "project" fluently from memory.</div>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-label">Phase 2</span>
+          <span class="phase-title">Deep Dive — People & Practice</span>
+          <span class="phase-weeks">Weeks 4–7 · Mid-May → Mid-June</span>
+        </div>
+        <div class="phase-body">
+          <ul class="phase-items">
+            <li>Complete Ch. 2 (People) — 4.4.6 to 4.4.10. Focus on: Tuckman team stages, Belbin roles, conflict styles, negotiation theory.</li>
+            <li>Begin Ch. 3 (Practice) — cover the project lifecycle phases (Init → Definition → Planning → Steering → Closure). Understand what happens at each phase.</li>
+            <li>Study the Planning CEs in depth: Scope (WBS), Time (Gantt/network diagrams), Resources, Finance. These underpin your Quality & Risk module too.</li>
+            <li>Risk & Opportunity (4.5.11) — this directly overlaps with your BEM2053DA module. Master it here and it serves both September exams. Study risk registers, likelihood/impact matrices, and response strategies.</li>
+            <li>Use spaced repetition: revisit your Ch. 1 glossary every few days using flashcards. Don't let early material fade.</li>
+          </ul>
+          <div class="phase-goal">✓ End goal: You can explain every CE in People, describe the project lifecycle, and build a basic risk register from memory.</div>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-label">Phase 3</span>
+          <span class="phase-title">Mock Prep — Simulate & Identify Gaps</span>
+          <span class="phase-weeks">Weeks 8–10 · Mid-June → July Mock</span>
+        </div>
+        <div class="phase-body">
+          <ul class="phase-items">
+            <li>Complete all remaining Practice CEs: Stakeholders (4.5.12), Quality (4.5.6), Plan & Control (4.5.10), Procurement, Change & Transformation — you want full coverage before the mock.</li>
+            <li>Do a full "brain dump" review — without the book, write everything you know across all 3 areas. Identify gaps and revisit them.</li>
+            <li>Attempt at least 2 full practice questions under timed, exam conditions before the mock. Treat them seriously.</li>
+            <li>Create a condensed 2-page cheat sheet (for encoding, not use in exam). One page per area. Force yourself to prioritise.</li>
+            <li><strong>The mock is a diagnostic tool.</strong> Go in and perform honestly — don't cram the night before. You want accurate feedback on where you actually stand.</li>
+          </ul>
+          <div class="phase-goal">✓ End goal: Walk into the mock having covered all 28 CEs. Walk out knowing exactly which areas need more work.</div>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-label">Phase 4</span>
+          <span class="phase-title">Gap-Filling — Mock Debrief & Targeted Revision</span>
+          <span class="phase-weeks">Weeks 11–15 · Post-Mock → Mid-August</span>
+        </div>
+        <div class="phase-body">
+          <ul class="phase-items">
+            <li>Immediately after the mock: write down every question you were unsure about or got wrong. This is your personal priority list for Phase 4.</li>
+            <li>Revisit weak areas with deeper focus — use the Feynman technique on any CE that tripped you up. If you can't explain it simply, go back to the textbook.</li>
+            <li>For university exam prep, shift into academic mode: re-read the Dittmann book with an analytical lens. Note where theories link to ICB4, DIN 69901, GPM references.</li>
+            <li>Practice long-form written answers. Your HS2 risk report experience gives you a structural template — adapt it for essay-style exam questions.</li>
+            <li>Build cross-referenced notes between your BEM2053DA Quality & Risk module and the Practice CEs — they are essentially the same material in two different registers.</li>
+          </ul>
+          <div class="phase-goal">✓ End goal: Every weakness flagged by the mock is resolved. You're now revising smart, not broadly.</div>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-label">Phase 5</span>
+          <span class="phase-title">Integration — Connect, Apply & Synthesise</span>
+          <span class="phase-weeks">Weeks 16–18 · Mid-August → Late August</span>
+        </div>
+        <div class="phase-body">
+          <ul class="phase-items">
+            <li>Look for connections across CEs: how does stakeholder management (4.5.12) interact with communication (4.4.3) and risk (4.5.11)? Examiners — both IPMA and uni — reward integrative thinking.</li>
+            <li>Take a real project (e.g. your Vendor Scope apprenticeship project or the leaders' offsite) and annotate it using ICB4 CE language across all three areas. This embeds terminology at a deep level.</li>
+            <li>Flashcard blitz: rapid-fire recall of all models, tools, and definitions. Priority on "Basic Certificate" tagged content in the book.</li>
+            <li>Practice at least one full mock paper under strict exam conditions — timed, no notes. Then mark it honestly.</li>
+          </ul>
+          <div class="phase-goal">✓ End goal: You can take any PM scenario and analyse it fluently using correct ICB4 language across all 3 areas.</div>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-label">Phase 6</span>
+          <span class="phase-title">Final Sprint — September Exams</span>
+          <span class="phase-weeks">Weeks 19–20 · Late Aug → September</span>
+        </div>
+        <div class="phase-body">
+          <ul class="phase-items">
+            <li>No new material. Review your condensed cheat sheets and glossary only — consolidation, not learning.</li>
+            <li>The week before: one focused session per day, 30–45 mins max. Read your notes, do active recall, stop.</li>
+            <li>Sleep, eat, exercise. Cognitive performance for recall exams is directly tied to rest — protect it in the final week.</li>
+            <li>Day before each exam: light read of cheat sheet only. No cramming. Trust the work you've done.</li>
+            <li>IPMA exam first (if scheduled before Uni) — then use any feedback from that to sharpen your university exam approach.</li>
+          </ul>
+          <div class="phase-goal">✓ End goal: Walk into both September exams calm, prepared, and ready to perform outstandingly.</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- TOPICS -->
+  <section id="topics" class="section">
+    <div class="timeline-header">
+      <h2 class="section-title">All Topics by Competence Element</h2>
+      <p class="section-sub">Every key CE from the Dittmann textbook, with study priority and recommended techniques. Filter by area.</p>
+    </div>
+
+    <div class="topics-filter">
+      <button class="filter-btn active-filter" onclick="filterTopics('all', this)">All</button>
+      <button class="filter-btn perspective-f" onclick="filterTopics('perspective', this)">Perspective</button>
+      <button class="filter-btn people-f" onclick="filterTopics('people', this)">People</button>
+      <button class="filter-btn practice-f" onclick="filterTopics('practice', this)">Practice</button>
+    </div>
+
+    <div class="topics-grid" id="topicsGrid">
+      <!-- Generated by JS -->
+    </div>
+  </section>
+
+  <!-- TECHNIQUES -->
+  <section id="techniques" class="section">
+    <div class="timeline-header">
+      <h2 class="section-title">Study Techniques That Work</h2>
+      <p class="section-sub">Chosen specifically for someone studying around a full-time job and a demanding apprenticeship. Quality over quantity.</p>
+    </div>
+    <div class="techniques-grid">
+      <div class="technique-card">
+        <div class="technique-icon">🔁</div>
+        <div class="technique-name">Spaced Repetition</div>
+        <div class="technique-desc">The single most evidence-backed technique for long-term retention. Instead of cramming once, you review material at increasing intervals.</div>
+        <div class="technique-how"><strong>How to do it:</strong> After reading a CE, review it the next day, then 3 days later, then a week later. Use flashcards (Anki is free). A 10-minute daily review beats a 2-hour weekly session.</div>
+      </div>
+      <div class="technique-card">
+        <div class="technique-icon">📤</div>
+        <div class="technique-name">Active Recall</div>
+        <div class="technique-desc">Close the book and try to retrieve information from memory. Struggling to recall is where the learning actually happens — don't skip this discomfort.</div>
+        <div class="technique-how"><strong>How to do it:</strong> After each study session, write on a blank page everything you just learned. Compare to the book. Focus your next session on what you missed, not what you got right.</div>
+      </div>
+      <div class="technique-card">
+        <div class="technique-icon">🧠</div>
+        <div class="technique-name">The Feynman Technique</div>
+        <div class="technique-desc">Explain a concept simply, as if teaching someone who's never heard of project management. If you can't explain it simply, you don't understand it yet.</div>
+        <div class="technique-how"><strong>How to do it:</strong> Pick one CE (e.g. 4.5.11 Risk). Explain it out loud or in writing in plain English. Where you stumble, that's the gap. Go back to the textbook just for that bit.</div>
+      </div>
+      <div class="technique-card">
+        <div class="technique-icon">🗺️</div>
+        <div class="technique-name">Mind Mapping</div>
+        <div class="technique-desc">Especially useful for the ICB4 because the three-area structure is inherently visual. Drawing connections between CEs builds integrative understanding.</div>
+        <div class="technique-how"><strong>How to do it:</strong> Start with one CE in the centre. Branch outward to: key models, key definitions, real-world examples, links to other CEs. Hand-draw it — the act of drawing aids encoding.</div>
+      </div>
+      <div class="technique-card">
+        <div class="technique-icon">📝</div>
+        <div class="technique-name">Practice Scenario Writing</div>
+        <div class="technique-desc">IPMA exams typically involve scenario-based questions — you're given a project situation and asked to apply CE frameworks. Practice is essential.</div>
+        <div class="technique-how"><strong>How to do it:</strong> Take your Vendor Scope or offsite event project from your apprenticeship. Write a 1-page analysis using as many ICB4 CE references as possible. Use the correct terminology deliberately.</div>
+      </div>
+      <div class="technique-card">
+        <div class="technique-icon">📋</div>
+        <div class="technique-name">Condensed Summary Sheets</div>
+        <div class="technique-desc">Forces you to identify what's truly important, rather than re-reading passively. The process of deciding what to include is learning in itself.</div>
+        <div class="technique-how"><strong>How to do it:</strong> For each CE, create a summary that fits on half a page: core definition, 1–2 key models/tools, and 1 practical example. By the end you'll have a complete revision pack of ~15 sheets.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRACKER -->
+  <section id="tracker" class="section">
+    <div class="timeline-header">
+      <h2 class="section-title">Progress Tracker</h2>
+      <p class="section-sub">Tick off each CE as you've fully revised it. Progress is saved to your browser.</p>
+    </div>
+
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressFill" style="width: 0%"></div>
+    </div>
+    <div class="progress-text" id="progressText">0 / 28 CEs revised</div>
+
+    <div class="tracker-grid" style="margin-top: 1.5rem;">
+      <div class="tracker-card">
+        <div class="tracker-title" style="color: var(--perspective)">Perspective (5 CEs)</div>
+        <div class="ce-checklist" id="perspectiveList"></div>
+      </div>
+      <div class="tracker-card">
+        <div class="tracker-title" style="color: var(--people)">People (10 CEs)</div>
+        <div class="ce-checklist" id="peopleList"></div>
+      </div>
+      <div class="tracker-card" style="grid-column: 1 / -1;">
+        <div class="tracker-title" style="color: var(--practice)">Practice (13 CEs)</div>
+        <div class="ce-checklist" id="practiceList" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TIPS -->
+  <section id="tips" class="section">
+    <div class="timeline-header">
+      <h2 class="section-title">Exam Day Tips & Strategy</h2>
+      <p class="section-sub">Based on the IPMA ICB4 format and general exam performance optimisation.</p>
+    </div>
+    <div class="tips-grid">
+      <div class="tip-card">
+        <div class="tip-label">Use the Mock Wisely</div>
+        <div class="tip-title">July mock = free feedback</div>
+        <div class="tip-body">The July mock is one of the most valuable things you have. Don't over-prepare for it — go in honestly so you get accurate diagnostic feedback. What you get wrong in July tells you exactly where to focus in August. Treat it as intelligence gathering, not a pass/fail moment.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-label">Terminology</div>
+        <div class="tip-title">Speak the language precisely</div>
+        <div class="tip-body">IPMA questions are language-precise. "Project" has a specific ICB4 definition — not just any initiative. Know the exact definitions from the textbook (DIN 69901, ICB4/GPM wording). Where a question gives a scenario, pick the answer that matches the ICB4 framework, not general intuition.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-label">High Priority Models</div>
+        <div class="tip-title">Know these cold</div>
+        <div class="tip-body">These models recur across exams: Maslow's Pyramid of Needs, Tuckman Team Stages (Forming → Performing), Belbin Team Roles, Johari Window, Eisenhower Matrix, Risk Likelihood/Impact Matrix, Stakeholder Analysis, and the Project Lifecycle phases.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-label">University Exams</div>
+        <div class="tip-title">Academic depth wins marks</div>
+        <div class="tip-body">Uni markers reward critical analysis over description. Don't just explain what a CE is — evaluate it. Why does it matter? What are the limitations? How does it connect to other CEs? Reference the Dittmann textbook and, where possible, secondary academic sources alongside the ICB4 itself.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-label">Overlap Strategy</div>
+        <div class="tip-title">Risk (4.5.11) serves both exams</div>
+        <div class="tip-body">Your BEM2053DA Quality & Risk module and your IPMA exam both test risk management deeply. Invest more time here than other CEs — the return is double. Your HS2 risk report structure translates directly. Hazard analysis, risk registers, response strategies — master these and they serve both assessments.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-label">Mental Game</div>
+        <div class="tip-title">Consistent beats intense</div>
+        <div class="tip-body">You're managing a full-time job, an apprenticeship, and two exams. Don't attempt marathon sessions — they lead to burnout and poor retention. 30 focused minutes daily outperforms 3 hours of guilt-driven weekend cramming. Trust the process and protect your sleep — it's when memory consolidates.</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+// Tab navigation
+function showTab(tab) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(tab).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// Topics data
+const topics = [
+  { area: 'perspective', ce: '4.3.1', name: 'Strategy', priority: 'high', tools: 'Mission/Vision/Strategy definitions, project-strategy alignment, GPM failure factors, strategic success factors' },
+  { area: 'perspective', ce: '4.3.2', name: 'Governance, Structure & Processes', priority: 'high', tools: 'Project definitions (ICB4, DIN 69901), project types, PM manual, portfolio management, project characteristics' },
+  { area: 'perspective', ce: '4.3.3', name: 'Compliance, Standards & Regulations', priority: 'med', tools: 'Legal compliance, data protection (GDPR), health & safety, hazard analysis / risk assessment' },
+  { area: 'perspective', ce: '4.3.4', name: 'Power & Interests', priority: 'med', tools: 'Definition of power, authority vs motivation, Maslow pyramid, interest analysis' },
+  { area: 'perspective', ce: '4.3.5', name: 'Culture & Values', priority: 'low', tools: 'Aligning projects with organisational culture, corporate values framework' },
+
+  { area: 'people', ce: '4.4.1', name: 'Self-Reflection & Self-Management', priority: 'high', tools: 'Eisenhower Matrix, Johari Window, team role self-awareness, personal competence development' },
+  { area: 'people', ce: '4.4.2', name: 'Personal Integrity & Reliability', priority: 'med', tools: 'Trust models, fault culture, ethical behaviour in PM' },
+  { area: 'people', ce: '4.4.3', name: 'Personal Communication', priority: 'high', tools: 'Iceberg model, communication channels & disruptions, active listening, questioning techniques, feedback models, meetings, virtual team communication' },
+  { area: 'people', ce: '4.4.4', name: 'Relationships & Engagement', priority: 'med', tools: 'Building professional relationships, stakeholder engagement, trust building' },
+  { area: 'people', ce: '4.4.5', name: 'Leadership', priority: 'high', tools: 'Leadership styles (authoritative, democratic, laissez-faire), situational leadership, management concepts' },
+  { area: 'people', ce: '4.4.6', name: 'Teamwork', priority: 'high', tools: 'Tuckman team stages (Forming→Storming→Norming→Performing), Belbin roles, team rules, remote teams' },
+  { area: 'people', ce: '4.4.7', name: 'Conflict & Crisis', priority: 'high', tools: 'Conflict definitions, symptoms & causes, Thomas-Kilmann conflict styles (competing, collaborating, compromising, avoiding, accommodating)' },
+  { area: 'people', ce: '4.4.8', name: 'Resourcefulness', priority: 'med', tools: 'Moderation techniques, analytical tools, creativity techniques (brainstorming, 6 hats)' },
+  { area: 'people', ce: '4.4.9', name: 'Negotiation', priority: 'med', tools: 'Negotiation principles, BATNA, interests vs positions, win-win strategies' },
+  { area: 'people', ce: '4.4.10', name: 'Results Orientation', priority: 'low', tools: 'PM requirements, results-focus guidelines, practical results orientation behaviours' },
+
+  { area: 'practice', ce: '4.5.1', name: 'Project Design', priority: 'high', tools: 'Project design principles, phase planning, business case, project charter, start commitment' },
+  { area: 'practice', ce: '4.5.2', name: 'Requirements & Objectives', priority: 'high', tools: 'Requirements elicitation, SMART objectives, success factors, acceptance criteria' },
+  { area: 'practice', ce: '4.5.3', name: 'Scope', priority: 'high', tools: 'WBS (Work Breakdown Structure), scope definition, deliverables, scope creep management' },
+  { area: 'practice', ce: '4.5.4', name: 'Time', priority: 'high', tools: 'Gantt charts, network diagrams, critical path method (CPM), milestones, scheduling' },
+  { area: 'practice', ce: '4.5.5', name: 'Organisation & Information', priority: 'high', tools: 'Project org charts, RACI matrix, roles & responsibilities, documentation management' },
+  { area: 'practice', ce: '4.5.6', name: 'Quality', priority: 'high', tools: 'Quality planning, quality assurance, quality control, quality gates, acceptance criteria' },
+  { area: 'practice', ce: '4.5.7', name: 'Finance', priority: 'high', tools: 'Budget planning, cost estimation, financial control, earned value analysis (EVM), cost reporting' },
+  { area: 'practice', ce: '4.5.8', name: 'Resources', priority: 'med', tools: 'Resource planning, capacity management, resource allocation, human vs material resources' },
+  { area: 'practice', ce: '4.5.9', name: 'Procurement', priority: 'med', tools: 'Make-or-buy decisions, supplier selection, contract types, procurement management' },
+  { area: 'practice', ce: '4.5.10', name: 'Plan & Control', priority: 'high', tools: 'Integrated project control, change management, progress measurement, reporting, phase transitions' },
+  { area: 'practice', ce: '4.5.11', name: 'Risk & Opportunity', priority: 'high', tools: '⭐ DUAL USE for BEM2053DA — Risk register, likelihood/impact matrix, risk response strategies (avoid/transfer/reduce/accept), opportunity management' },
+  { area: 'practice', ce: '4.5.12', name: 'Stakeholders', priority: 'high', tools: 'Stakeholder identification, analysis (power/interest grid), engagement planning, communication strategy' },
+  { area: 'practice', ce: '4.5.13', name: 'Change & Transformation', priority: 'med', tools: 'Change management frameworks, transition management, transformation within projects, change resistance' },
+];
+
+function filterTopics(area, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active-filter'));
+  btn.classList.add('active-filter');
+  renderTopics(area);
+}
+
+function renderTopics(filter = 'all') {
+  const grid = document.getElementById('topicsGrid');
+  const filtered = filter === 'all' ? topics : topics.filter(t => t.area === filter);
+  grid.innerHTML = filtered.map(t => `
+    <div class="topic-card ${t.area}-t">
+      <div class="topic-header">
+        <span class="topic-ce">${t.ce}</span>
+        <span class="topic-priority ${t.priority === 'high' ? 'p-high' : t.priority === 'med' ? 'p-med' : 'p-low'}">${t.priority === 'high' ? '★ HIGH' : t.priority === 'med' ? '◆ MED' : '○ LOW'}</span>
+      </div>
+      <div class="topic-name">${t.name}</div>
+      <div class="topic-tools">${t.tools}</div>
+    </div>
+  `).join('');
+}
+
+renderTopics();
+
+// Tracker
+const ces = {
+  perspective: [
+    { code: '4.3.1', name: 'Strategy' },
+    { code: '4.3.2', name: 'Governance & Structure' },
+    { code: '4.3.3', name: 'Compliance' },
+    { code: '4.3.4', name: 'Power & Interests' },
+    { code: '4.3.5', name: 'Culture & Values' },
+  ],
+  people: [
+    { code: '4.4.1', name: 'Self-Reflection' },
+    { code: '4.4.2', name: 'Integrity & Reliability' },
+    { code: '4.4.3', name: 'Communication' },
+    { code: '4.4.4', name: 'Relationships' },
+    { code: '4.4.5', name: 'Leadership' },
+    { code: '4.4.6', name: 'Teamwork' },
+    { code: '4.4.7', name: 'Conflict & Crisis' },
+    { code: '4.4.8', name: 'Resourcefulness' },
+    { code: '4.4.9', name: 'Negotiation' },
+    { code: '4.4.10', name: 'Results Orientation' },
+  ],
+  practice: [
+    { code: '4.5.1', name: 'Project Design' },
+    { code: '4.5.2', name: 'Requirements' },
+    { code: '4.5.3', name: 'Scope' },
+    { code: '4.5.4', name: 'Time' },
+    { code: '4.5.5', name: 'Organisation' },
+    { code: '4.5.6', name: 'Quality' },
+    { code: '4.5.7', name: 'Finance' },
+    { code: '4.5.8', name: 'Resources' },
+    { code: '4.5.9', name: 'Procurement' },
+    { code: '4.5.10', name: 'Plan & Control' },
+    { code: '4.5.11', name: 'Risk & Opportunity ⭐' },
+    { code: '4.5.12', name: 'Stakeholders' },
+    { code: '4.5.13', name: 'Change & Transformation' },
+  ]
+};
+
+const STORAGE_KEY = 'ipma_tracker_v1';
+
+function loadDone() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+  } catch { return {}; }
+}
+
+function saveDone(done) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(done)); } catch {}
+}
+
+function updateProgress() {
+  const done = loadDone();
+  const total = 28;
+  const count = Object.values(done).filter(Boolean).length;
+  document.getElementById('progressFill').style.width = (count / total * 100) + '%';
+  document.getElementById('progressText').textContent = `${count} / ${total} CEs revised`;
+}
+
+function renderTracker() {
+  const done = loadDone();
+  ['perspective', 'people', 'practice'].forEach(area => {
+    const list = document.getElementById(area + 'List');
+    list.innerHTML = ces[area].map(ce => `
+      <div class="ce-item ${done[ce.code] ? 'done' : ''}" onclick="toggleCE('${ce.code}')">
+        <div class="ce-checkbox">${done[ce.code] ? '✓' : ''}</div>
+        <div class="ce-item-code">${ce.code}</div>
+        <div class="ce-item-name">${ce.name}</div>
+      </div>
+    `).join('');
+  });
+  updateProgress();
+}
+
+function toggleCE(code) {
+  const done = loadDone();
+  done[code] = !done[code];
+  saveDone(done);
+  renderTracker();
+}
+
+renderTracker();
+</script>
+</body>
+</html>

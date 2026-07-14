@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IPMA Revision Hub — Zae</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,700;1,700&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --border: #2a2a3a;
+    --accent: #c8a96e;
+    --accent2: #7c9ce8;
+    --accent3: #8ee3b4;
+    --text: #e8e4dc;
+    --muted: #7a7a8a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+  .container { max-width: 640px; width: 100%; text-align: center; }
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 0.75rem;
+    color: var(--text);
+  }
+  h1 em { color: var(--accent); font-style: italic; }
+  .sub {
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 3rem;
+  }
+  .cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.75rem 1.5rem;
+    text-decoration: none;
+    color: var(--text);
+    transition: border-color 0.2s, transform 0.15s;
+    display: block;
+    text-align: left;
+  }
+  .card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .card-icon { font-size: 1.75rem; margin-bottom: 0.75rem; }
+  .card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+    color: var(--accent);
+  }
+  .card-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+  .meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+  }
+  .dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--accent3); margin: 0 0.4rem; vertical-align: middle; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="eyebrow">IPMA® ICB4 · Level D</div>
+  <h1>Revision <em>Hub</em></h1>
+  <p class="sub">Mock exam in July · Official IPMA & Uni exams in September 2026.<br>28 competence elements. 3 areas. One goal — outstanding.</p>
+
+  <div class="cards">
+    <a class="card" href="ipma_flashcards.html">
+      <div class="card-icon">🃏</div>
+      <div class="card-title">Flashcards</div>
+      <div class="card-desc">44 cards across all 3 competence areas. Flip, mark, and filter by area or priority.</div>
+    </a>
+    <a class="card" href="ipma_revision_strategy.html">
+      <div class="card-icon">📋</div>
+      <div class="card-title">Revision Strategy</div>
+      <div class="card-desc">6-phase plan, all 28 CE topics, study techniques, and a progress tracker.</div>
+    </a>
+  </div>
+
+  <div class="meta">
+    <span style="color:var(--accent3)">●</span> Perspective — 5 CEs
+    <span class="dot"></span>
+    <span style="color:var(--people-col, #a47ce8)">●</span> People — 10 CEs
+    <span class="dot"></span>
+    <span style="color:var(--accent3)">●</span> Practice — 13 CEs
+  </div>
+</div>
+</body>
+</html>
