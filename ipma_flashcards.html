@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IPMA Flashcards — ICB4</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f0e8;
+    --card-front: #1a1a2e;
+    --card-back: #16213e;
+    --accent: #c9a84c;
+    --accent2: #e07b54;
+    --accent3: #5ba08a;
+    --text-light: #f0ebe0;
+    --text-dark: #1a1a2e;
+    --muted: #8a8070;
+    --border: #d4cbb8;
+    --perspective-col: #e07b54;
+    --people-col: #9b6ea8;
+    --practice-col: #5ba08a;
+    --tag-bg: rgba(201,168,76,0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    background-image: 
+      radial-gradient(ellipse at 20% 50%, rgba(201,168,76,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(91,160,138,0.07) 0%, transparent 50%);
+    color: var(--text-dark);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Header */
+  .header {
+    padding: 1.5rem 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    background: rgba(245,240,232,0.9);
+    backdrop-filter: blur(8px);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    letter-spacing: -0.02em;
+  }
+
+  .logo span { color: var(--accent); font-style: italic; }
+
+  .header-stats {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  .stat-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .stat-pill strong {
+    color: var(--text-dark);
+    font-weight: 500;
+  }
+
+  /* Filter bar */
+  .filter-bar {
+    padding: 1rem 2.5rem;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    flex-wrap: wrap;
+  }
+
+  .filter-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-right: 0.5rem;
+    white-space: nowrap;
+  }
+
+  .chip {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.4rem 0.9rem;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: white;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .chip:hover { border-color: var(--accent); color: var(--accent); }
+  .chip.active { background: var(--text-dark); color: var(--bg); border-color: var(--text-dark); }
+  .chip.active.perspective { background: var(--perspective-col); border-color: var(--perspective-col); }
+  .chip.active.people { background: var(--people-col); border-color: var(--people-col); }
+  .chip.active.practice { background: var(--practice-col); border-color: var(--practice-col); }
+
+  /* Main layout */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3rem 2rem;
+    gap: 2rem;
+  }
+
+  /* Progress bar */
+  .progress-track {
+    width: 100%;
+    max-width: 640px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .progress-bar {
+    flex: 1;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  .progress-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  /* Card container */
+  .card-area {
+    perspective: 1200px;
+    width: 100%;
+    max-width: 640px;
+    height: 360px;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card-area.flipped .card-inner {
+    transform: rotateY(180deg);
+  }
+
+  .card-face {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 2.5rem;
+    box-shadow: 0 4px 24px rgba(26,26,46,0.12), 0 1px 4px rgba(26,26,46,0.08);
+  }
+
+  /* FRONT */
+  .card-front {
+    background: var(--card-front);
+    color: var(--text-light);
+  }
+
+  .card-area-tag {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: auto;
+  }
+
+  .area-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.3rem 0.7rem;
+    border-radius: 3px;
+  }
+
+  .area-badge.perspective { background: rgba(224,123,84,0.2); color: var(--perspective-col); }
+  .area-badge.people { background: rgba(155,110,168,0.2); color: var(--people-col); }
+  .area-badge.practice { background: rgba(91,160,138,0.2); color: var(--practice-col); }
+  .area-badge.ce-code { background: rgba(201,168,76,0.15); color: var(--accent); }
+
+  .card-question {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.85rem;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--text-light);
+    margin-top: 1.5rem;
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  .card-hint {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: rgba(240,235,224,0.35);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-top: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .card-hint::before {
+    content: '';
+    display: inline-block;
+    width: 16px;
+    height: 1px;
+    background: rgba(240,235,224,0.25);
+  }
+
+  /* BACK */
+  .card-back {
+    background: var(--card-back);
+    color: var(--text-light);
+    transform: rotateY(180deg);
+  }
+
+  .answer-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+
+  .card-answer {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    line-height: 1.65;
+    color: rgba(240,235,224,0.92);
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .card-answer strong {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .card-answer ul {
+    padding-left: 1.25rem;
+    margin-top: 0.5rem;
+  }
+
+  .card-answer li {
+    margin-bottom: 0.3rem;
+  }
+
+  /* Controls */
+  .controls {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    width: 100%;
+    max-width: 640px;
+  }
+
+  .btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.75rem 1.25rem;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: white;
+    color: var(--text-dark);
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn:hover { border-color: var(--text-dark); background: var(--text-dark); color: var(--bg); }
+
+  .btn-nav {
+    flex: 1;
+    justify-content: center;
+    font-size: 0.75rem;
+  }
+
+  .btn-know { border-color: var(--accent3); color: var(--accent3); }
+  .btn-know:hover { background: var(--accent3); border-color: var(--accent3); color: white; }
+
+  .btn-unsure { border-color: var(--accent2); color: var(--accent2); }
+  .btn-unsure:hover { background: var(--accent2); border-color: var(--accent2); color: white; }
+
+  .btn-flip {
+    flex: 1;
+    justify-content: center;
+    background: var(--text-dark);
+    border-color: var(--text-dark);
+    color: var(--bg);
+    font-size: 0.75rem;
+  }
+
+  .btn-flip:hover { background: #2d2d4e; border-color: #2d2d4e; }
+
+  /* Result feedback */
+  .feedback-row {
+    display: flex;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 640px;
+  }
+
+  /* Card counter / navigation */
+  .nav-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    max-width: 640px;
+    justify-content: space-between;
+  }
+
+  .card-counter {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+
+  .card-dots {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    max-width: 300px;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: background 0.2s;
+  }
+
+  .dot.current { background: var(--accent); transform: scale(1.3); }
+  .dot.known { background: var(--accent3); }
+  .dot.unsure { background: var(--accent2); }
+
+  /* Shuffle / restart */
+  .action-row {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 640px;
+    justify-content: flex-end;
+  }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--muted);
+  }
+
+  .empty-state h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+  }
+
+  /* Complete state */
+  .complete-card {
+    width: 100%;
+    max-width: 640px;
+    background: var(--card-front);
+    border-radius: 12px;
+    padding: 3rem 2.5rem;
+    text-align: center;
+    box-shadow: 0 4px 24px rgba(26,26,46,0.12);
+    display: none;
+  }
+
+  .complete-card.show { display: block; }
+
+  .complete-emoji { font-size: 3rem; margin-bottom: 1rem; }
+
+  .complete-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+  }
+
+  .complete-stats {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    margin: 1.5rem 0;
+  }
+
+  .cs {
+    text-align: center;
+  }
+
+  .cs-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    display: block;
+  }
+
+  .cs-lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+  }
+
+  /* Mobile */
+  @media (max-width: 680px) {
+    .header { padding: 1rem 1.25rem; }
+    .filter-bar { padding: 0.75rem 1.25rem; }
+    .main { padding: 1.5rem 1rem; }
+    .card-area { height: 320px; }
+    .card-face { padding: 1.75rem; }
+    .card-question { font-size: 1.4rem; }
+    .card-answer { font-size: 0.9rem; }
+  }
+
+  /* Swipe hint animation */
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-area { animation: slideIn 0.35s ease both; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">IPMA® <span>Flashcards</span></div>
+  <div class="header-stats">
+    <div class="stat-pill">Deck: <strong id="deckSize">0</strong> cards</div>
+    <div class="stat-pill">Known: <strong id="knownCount" style="color:var(--accent3)">0</strong></div>
+    <div class="stat-pill">Review: <strong id="unsureCount" style="color:var(--accent2)">0</strong></div>
+  </div>
+</header>
+
+<div class="filter-bar">
+  <span class="filter-label">Filter:</span>
+  <button class="chip active" onclick="setFilter('all', this)">All Areas</button>
+  <button class="chip perspective" onclick="setFilter('perspective', this)">Perspective</button>
+  <button class="chip people" onclick="setFilter('people', this)">People</button>
+  <button class="chip practice" onclick="setFilter('practice', this)">Practice</button>
+  <button class="chip" onclick="setFilter('starred', this)">⭐ High Priority</button>
+  <button class="chip" onclick="setFilter('unsure', this)">Review Only</button>
+</div>
+
+<main class="main">
+
+  <div class="progress-track">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="progress-label" id="progressLabel">0 / 0</div>
+  </div>
+
+  <div class="card-area" id="cardArea" onclick="flipCard()">
+    <div class="card-inner" id="cardInner">
+      <div class="card-face card-front" id="cardFront">
+        <div class="card-area-tag">
+          <span class="area-badge" id="areaBadge">—</span>
+          <span class="area-badge ce-code" id="ceBadge">—</span>
+        </div>
+        <div class="card-question" id="questionText">Loading...</div>
+        <div class="card-hint">tap to reveal answer</div>
+      </div>
+      <div class="card-face card-back" id="cardBack">
+        <div class="answer-label">Answer</div>
+        <div class="card-answer" id="answerText"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="complete-card" id="completeCard">
+    <div class="complete-emoji">🎓</div>
+    <div class="complete-title">Deck Complete!</div>
+    <div style="color:rgba(240,235,224,0.6);font-size:0.9rem;margin-bottom:1.5rem;">You've been through all cards in this set.</div>
+    <div class="complete-stats">
+      <div class="cs"><span class="cs-num" id="finalKnown" style="color:var(--accent3)">0</span><span class="cs-lbl">Known</span></div>
+      <div class="cs"><span class="cs-num" id="finalUnsure" style="color:var(--accent2)">0</span><span class="cs-lbl">Review</span></div>
+      <div class="cs"><span class="cs-num" id="finalSkipped" style="color:var(--muted)">0</span><span class="cs-lbl">Skipped</span></div>
+    </div>
+    <button class="btn" onclick="restartDeck()" style="display:inline-flex;margin:0 auto;background:var(--accent);border-color:var(--accent);color:var(--text-dark);font-weight:600;">↻ Restart Deck</button>
+  </div>
+
+  <div class="feedback-row" id="feedbackRow" style="display:none;">
+    <button class="btn btn-unsure" onclick="markCard('unsure')">✗ Still Learning</button>
+    <button class="btn btn-know" onclick="markCard('known')">✓ Got It</button>
+  </div>
+
+  <div class="controls" id="mainControls">
+    <button class="btn btn-nav" onclick="prevCard()">← Prev</button>
+    <button class="btn btn-flip" onclick="flipCard()">Flip Card ↻</button>
+    <button class="btn btn-nav" onclick="nextCard()">Next →</button>
+  </div>
+
+  <div class="nav-row">
+    <div class="card-counter" id="cardCounter">Card 0 of 0</div>
+    <div class="card-dots" id="cardDots"></div>
+  </div>
+
+  <div class="action-row">
+    <button class="btn" onclick="shuffleDeck()" title="Shuffle">⇌ Shuffle</button>
+    <button class="btn" onclick="resetProgress()">Reset Progress</button>
+  </div>
+
+</main>
+
+<script>
+const ALL_CARDS = [
+  // ── PERSPECTIVE ──────────────────────────────────────────────────
+  {
+    area: 'perspective', ce: '4.3.1', priority: 'high',
+    q: 'What is the definition of Strategy according to Motzel?',
+    a: '<strong>Strategy</strong> is "basic, long-term, and documented behavior (combination of measures) planned to achieve the vision based on the mission." It is goal-oriented in terms of long-term, global, environmental, and/or development-oriented aspects.'
+  },
+  {
+    area: 'perspective', ce: '4.3.1', priority: 'high',
+    q: 'What is Mission vs Vision vs Strategy?',
+    a: '<ul><li><strong>Mission</strong> — the assignment or purpose of an organisation. Answers: "What are we here for?"</li><li><strong>Vision</strong> — a clearly described desire for the future. It creates a positive, motivating direction.</li><li><strong>Strategy</strong> — the documented plan to achieve the vision, based on the mission.</li></ul>'
+  },
+  {
+    area: 'perspective', ce: '4.3.1', priority: 'high',
+    q: 'What happens when a project contradicts an organisation\'s strategy?',
+    a: 'A so-called <strong>value-destroying complexity</strong> arises. Top management is responsible for ensuring projects are aligned with strategy. Questions to check consistency include: Are success factors supported by the strategy? Is the business case in line with strategy?'
+  },
+  {
+    area: 'perspective', ce: '4.3.2', priority: 'high',
+    q: 'Define "Project" according to IPMA® / ICB4.',
+    a: '"A Project is defined as a <strong>one-time, temporary, interdisciplinary and organised endeavour</strong> to achieve fixed work results within the framework of predefined requirements and boundary conditions." (GPM/ICB4)'
+  },
+  {
+    area: 'perspective', ce: '4.3.2', priority: 'high',
+    q: 'What are the 6 key characteristics of a project?',
+    a: '<ul><li><strong>Novelty/Uniqueness</strong> — one-off initiative, increased risk</li><li><strong>Complexity</strong> — many objectives, factors, interdependencies</li><li><strong>Limited time</strong> — defined start and finish</li><li><strong>Teamwork</strong> — interdisciplinary, cross-departmental teams</li><li><strong>Limited resources</strong> — constrained staff, budget etc.</li><li><strong>Clear objectives</strong> — defined results, quality, cost, deadlines</li></ul>'
+  },
+  {
+    area: 'perspective', ce: '4.3.2', priority: 'high',
+    q: 'Define "Project Management" according to IPMA®.',
+    a: '"Project management deals with the <strong>application of methods, tools, techniques and competencies</strong> for a project to achieve goals." (IPMA®)\n\nDIN 69901 adds that PM is "the managerial task, organisation, technique, and means of initiating, defining, planning, controlling, and completing projects."'
+  },
+  {
+    area: 'perspective', ce: '4.3.2', priority: 'med',
+    q: 'What is IPMA® and what standard does it use?',
+    a: '<strong>IPMA®</strong> (International Project Management Association) is an organisation across 70 national subsidiaries that develops PM standards. Their current standard is <strong>ICB 4.0 (ICB4)</strong> — the Individual Competence Baseline — with <strong>28 competence elements</strong>. IPMA® standards are <strong>competence-based</strong>, unlike the process-based standards of PMI or PRINCE2.'
+  },
+  {
+    area: 'perspective', ce: '4.3.2', priority: 'med',
+    q: 'What is a Project Portfolio and what is the Project Portfolio Board?',
+    a: 'The <strong>project portfolio</strong> is all projects currently carried out in a company. The <strong>portfolio board</strong> (often under the PMO) decides which projects enter the portfolio based on: strategic alignment, resource availability, and relevance. It differs from a steering committee, which is assigned to a specific project.'
+  },
+  {
+    area: 'perspective', ce: '4.3.2', priority: 'low',
+    q: 'What are the main types of projects?',
+    a: '<strong>By client:</strong><ul><li>External (commissioned) — client outside the org, contract-based</li><li>Internal — client within the company</li></ul><strong>By content:</strong><ul><li>Investment projects — tangible assets (buildings, infrastructure)</li><li>Organisational projects — structural/process changes</li><li>R&D projects — new product/technology development</li></ul>'
+  },
+  {
+    area: 'perspective', ce: '4.3.3', priority: 'med',
+    q: 'What is Compliance according to ICB4?',
+    a: '<strong>Compliance</strong> is "the process of ensuring adequate adherence to a given set of norms." Requirements range from voluntary/informal to mandatory/formal. The CE describes how the individual interprets and balances external and internal restrictions (country, company, industry).'
+  },
+  {
+    area: 'perspective', ce: '4.3.3', priority: 'med',
+    q: 'What are the three PM duties of supervision and care?',
+    a: '<ul><li><strong>Supervisory duty</strong> — ensure employees behave so no one comes to harm (equipment tested, employees not operating unauthorised equipment)</li><li><strong>Due diligence</strong> — care toward employees (e.g. appropriate working conditions)</li><li><strong>Duty of care</strong> — general responsibility for safe, legal conduct</li></ul>Violations can lead to claims for damages.'
+  },
+  {
+    area: 'perspective', ce: '4.3.4', priority: 'med',
+    q: 'What is Maslow\'s Pyramid of Needs and its 5 levels?',
+    a: 'A motivation theory representing a hierarchy of human needs:<ul><li><strong>1. Physiological</strong> — food, sleep, warmth</li><li><strong>2. Safety</strong> — security, stability</li><li><strong>3. Social/Love</strong> — belonging, relationships</li><li><strong>4. Esteem</strong> — recognition, status</li><li><strong>5. Self-actualisation</strong> — realising full potential</li></ul>Lower needs must be satisfied before higher ones motivate behaviour.'
+  },
+  {
+    area: 'perspective', ce: '4.3.5', priority: 'low',
+    q: 'What does CE Culture and Values (4.3.5) require of a project manager?',
+    a: 'The PM must <strong>align the project with the formal culture and corporate values</strong> of the organisation. This means understanding the informal norms, behaviours, and values of the parent organisation and ensuring project behaviour is consistent with them — avoiding cultural friction that could harm stakeholder relationships or project acceptance.'
+  },
+
+  // ── PEOPLE ──────────────────────────────────────────────────────
+  {
+    area: 'people', ce: '4.4.1', priority: 'high',
+    q: 'What is the Johari Window and how is it used in project management?',
+    a: 'A model for self-awareness with 4 quadrants based on what is known/unknown to self and others:<ul><li><strong>Open/Arena</strong> — known to self and others</li><li><strong>Blind spot</strong> — known to others, unknown to self</li><li><strong>Façade/Hidden</strong> — known to self, hidden from others</li><li><strong>Unknown</strong> — unknown to both</li></ul>PMs use it to develop self-awareness and seek feedback to reduce their blind spot.'
+  },
+  {
+    area: 'people', ce: '4.4.1', priority: 'high',
+    q: 'What is the Eisenhower Matrix?',
+    a: 'A time management tool dividing tasks by urgency and importance:<ul><li><strong>Urgent + Important</strong> → Do immediately</li><li><strong>Not urgent + Important</strong> → Schedule (this is where strategy lives)</li><li><strong>Urgent + Not important</strong> → Delegate</li><li><strong>Not urgent + Not important</strong> → Delete/Eliminate</li></ul>PMs should spend most time in the "not urgent but important" quadrant.'
+  },
+  {
+    area: 'people', ce: '4.4.2', priority: 'med',
+    q: 'What is "fault culture" in project management?',
+    a: 'A <strong>constructive fault culture</strong> (also called "error culture") creates an environment where mistakes are treated as learning opportunities rather than punished. This encourages transparency, honest reporting of issues, and continuous improvement — essential for risk management and team trust.'
+  },
+  {
+    area: 'people', ce: '4.4.3', priority: 'high',
+    q: 'What is the Iceberg Model of communication?',
+    a: 'Communication has two levels:<ul><li><strong>Content level (visible, above water)</strong> — the explicit, factual message</li><li><strong>Relationship level (hidden, below water)</strong> — the emotional, interpersonal dimension</li></ul>Most misunderstandings and conflicts arise at the relationship level. PMs must attend to both levels — what is said AND how the relationship is affecting communication.'
+  },
+  {
+    area: 'people', ce: '4.4.3', priority: 'high',
+    q: 'What are the key principles of active listening?',
+    a: '<ul><li>Give full attention — no interrupting</li><li>Use open body language and eye contact</li><li>Paraphrase to confirm understanding</li><li>Ask clarifying questions</li><li>Reflect emotions back to the speaker</li><li>Avoid jumping to solutions</li></ul>Active listening builds trust and reduces misunderstandings in project teams.'
+  },
+  {
+    area: 'people', ce: '4.4.3', priority: 'med',
+    q: 'What are the main communication channels and what is "noise" in communication?',
+    a: '<strong>Channels</strong> include verbal (face-to-face, phone), written (email, reports), and non-verbal (body language). <strong>Noise</strong> = any disruption to the message — e.g. language barriers, emotional filters, technical failures, unclear wording. Virtual teams face additional channel limitations (no non-verbal cues).'
+  },
+  {
+    area: 'people', ce: '4.4.5', priority: 'high',
+    q: 'What are the three main leadership styles?',
+    a: '<ul><li><strong>Authoritative/Directive</strong> — PM decides alone; fast but low team buy-in. Good in crisis.</li><li><strong>Democratic/Participative</strong> — Team involved in decisions; slower but higher commitment.</li><li><strong>Laissez-faire/Delegative</strong> — Team given autonomy; works with highly skilled, motivated individuals.</li></ul>Situational leadership means adapting the style to the context, team maturity, and task.'
+  },
+  {
+    area: 'people', ce: '4.4.6', priority: 'high',
+    q: 'What are Tuckman\'s 5 stages of team development?',
+    a: '<ul><li><strong>Forming</strong> — polite, cautious; PM acts as host. Kick-off meeting typical tool.</li><li><strong>Storming</strong> — conflicts and positioning; PM acts as catalyst, doesn\'t intervene too much.</li><li><strong>Norming</strong> — roles established, rules defined; PM as moderator.</li><li><strong>Performing</strong> — high productivity, self-organised; PM as coordinator (primus inter pares).</li><li><strong>Adjourning</strong> — project ends, team dissolves; PM as coach.</li></ul>Every team change restarts the cycle.'
+  },
+  {
+    area: 'people', ce: '4.4.6', priority: 'high',
+    q: 'What are Belbin\'s 9 team roles and their three groups?',
+    a: '<strong>Action-oriented:</strong> Shaper (drives), Implementer (organises), Completer-Finisher (perfects)<br><strong>Team-oriented:</strong> Team Worker (supports harmony), Coordinator (delegates, decides), Resource Investigator (networks)<br><strong>Thought-oriented:</strong> Plant (creative ideas), Monitor-Evaluator (analyses critically), Specialist (expert knowledge)<br><br>Effective teams need all 9 roles covered. Two people in the same role (e.g. two Shapers) can cause friction.'
+  },
+  {
+    area: 'people', ce: '4.4.7', priority: 'high',
+    q: 'What is the definition of Conflict in project management?',
+    a: '"Situation loaded with tension and/or pressure, emerging when <strong>different opinions, interests, and expectations clash</strong>. At least one party is uncomfortable, limited, or severely blocked." (Motzel)\n\nConflict types include: objectives/direction, evaluation/perception, roles/expectations, ownership/distribution, change/security, relationship/behaviour.'
+  },
+  {
+    area: 'people', ce: '4.4.7', priority: 'high',
+    q: 'What is the difference between a Conflict and a Crisis?',
+    a: '<strong>Conflict</strong> — a situation where differing interests clash; can usually be managed.\n\n<strong>Crisis</strong> — a special type of conflict where those involved feel <strong>genuinely hopeless</strong>. Characterised by helplessness, possible paralysis, and serious project deviation. Crises have both a factual aspect (measurable danger) and a socio-personal aspect (fear, stress). Crises are often conflicts left unresolved.'
+  },
+  {
+    area: 'people', ce: '4.4.7', priority: 'high',
+    q: 'What are the 6 causes of conflict in projects?',
+    a: '<ul><li><strong>Objective/Direction</strong> — contradicting goals (classic: quality vs cost)</li><li><strong>Evaluation/Perception</strong> — different assessment of the same situation</li><li><strong>Role/Expectation</strong> — conflicting expectations about someone\'s role</li><li><strong>Ownership/Distribution</strong> — arguments over budget, time, or people</li><li><strong>Change/Security</strong> — fear of change or uncertainty</li><li><strong>Relationship/Behaviour</strong> — inappropriate or offensive behaviour</li></ul>'
+  },
+  {
+    area: 'people', ce: '4.4.7', priority: 'high',
+    q: 'What are the conflict styles according to Virginia Satir / Thomas-Kilmann?',
+    a: 'Five main styles, each useful in different contexts:<ul><li><strong>Competing</strong> — win-lose, assertive</li><li><strong>Collaborating</strong> — win-win, seeks mutual benefit</li><li><strong>Compromising</strong> — partial win for both sides</li><li><strong>Avoiding</strong> — withdraws from conflict</li><li><strong>Accommodating</strong> — gives way to the other party</li></ul>Consensus/compromise are culturally accepted as ideal. Flexibility across styles is key.'
+  },
+  {
+    area: 'people', ce: '4.4.7', priority: 'med',
+    q: 'What are 5 symptoms that a conflict is developing in a project?',
+    a: '<ul><li>Communication becomes stiff and more formal</li><li>Objective discussions decrease; polemics arise</li><li>People search for the guilty rather than solutions</li><li>Team members avoid each other or skip meetings</li><li>Sub-groups form within the team</li></ul>Early recognition is critical — unresolved conflicts become crises.'
+  },
+  {
+    area: 'people', ce: '4.4.8', priority: 'med',
+    q: 'What is Resourcefulness (CE 4.4.8)?',
+    a: '"Defines the ability to apply <strong>different techniques and mindsets</strong> to define, analyse, prioritise and search for alternatives for dealing with challenges and problems." (ICB4)\n\nIncludes: moderation techniques, analytical techniques, and creativity techniques (brainstorming, Six Thinking Hats, etc.).'
+  },
+  {
+    area: 'people', ce: '4.4.9', priority: 'med',
+    q: 'What are the key principles of negotiation in project management?',
+    a: '<ul><li>Focus on <strong>interests, not positions</strong></li><li>Understand your <strong>BATNA</strong> (Best Alternative to a Negotiated Agreement)</li><li>Aim for <strong>win-win outcomes</strong> where possible</li><li>Separate people from the problem</li><li>Use objective criteria</li></ul>Good negotiation protects relationships while achieving results.'
+  },
+  {
+    area: 'people', ce: '4.4.10', priority: 'low',
+    q: 'What does Results Orientation (CE 4.4.10) mean for a PM?',
+    a: 'Results orientation means consistently focusing on achieving project objectives — not just activity. Requirements include: clear goal-setting, prioritisation, accountability, and maintaining focus on deliverables even under pressure. PMs must avoid "busy work" and keep the team directed toward measurable outcomes.'
+  },
+
+  // ── PRACTICE ────────────────────────────────────────────────────
+  {
+    area: 'practice', ce: '4.5.1', priority: 'high',
+    q: 'What is the Magic Triangle of project management?',
+    a: 'The <strong>Magic Triangle</strong> (triple constraint) shows that <strong>Time, Cost, and Scope</strong> are the three main objectives and limitations of every project. They are interdependent — if one changes, the others are affected. Prioritising these three corners gives the project a clear direction and basis for decisions.'
+  },
+  {
+    area: 'practice', ce: '4.5.1', priority: 'high',
+    q: 'What is a Business Case and what does it contain?',
+    a: 'A <strong>Business Case</strong> is a document that justifies a project investment. It answers: why is this project needed? Typical contents include: objectives, expected benefits, costs, risks, alternatives considered, and strategic alignment. It must be in line with the organisation\'s strategy.'
+  },
+  {
+    area: 'practice', ce: '4.5.2', priority: 'high',
+    q: 'What is the SMART formula for project objectives?',
+    a: '<strong>SMART</strong> ensures objectives are clear and achievable:<ul><li><strong>S</strong>pecific</li><li><strong>M</strong>easurable</li><li><strong>A</strong>chievable (Attainable)</li><li><strong>R</strong>ealistic (Relevant)</li><li><strong>T</strong>ime-bound</li></ul>Not every SMART criterion must appear in every objective\'s wording, but the totality must result in a clear, assessable goal.'
+  },
+  {
+    area: 'practice', ce: '4.5.2', priority: 'high',
+    q: 'What are the 5 functions of objectives in a project?',
+    a: '<ul><li><strong>Control</strong> — yardstick for measuring success and progress</li><li><strong>Orientation</strong> — gives direction to project members</li><li><strong>Coordination</strong> — helps define interfaces in a division of labour</li><li><strong>Selection</strong> — basis for decision-making and prioritisation</li><li><strong>Connection</strong> — builds team cohesion around shared goals</li></ul>'
+  },
+  {
+    area: 'practice', ce: '4.5.2', priority: 'med',
+    q: 'What is the MuSCoW method?',
+    a: 'A prioritisation method for requirements and objectives:<ul><li><strong>Must</strong> — mandatory, non-negotiable; project fails without it</li><li><strong>Should</strong> — high priority; project only partially successful if missing</li><li><strong>Could</strong> — nice to have; can be dropped if resource constrained</li><li><strong>Won\'t</strong> — explicitly out of scope for this project (but documented)</li></ul>Often used in agile projects.'
+  },
+  {
+    area: 'practice', ce: '4.5.2', priority: 'med',
+    q: 'What are the 5 degrees of compatibility between project objectives?',
+    a: '<ul><li><strong>Identity</strong> — complete congruence (achieving one = achieving the other)</li><li><strong>Complementarity</strong> — mutual support</li><li><strong>Neutrality</strong> — complete independence</li><li><strong>Competition</strong> — mutual interference</li><li><strong>Antinomy</strong> — complete mutual exclusion</li></ul>Competitive and antinomous objectives must be resolved by prioritisation or discussion.'
+  },
+  {
+    area: 'practice', ce: '4.5.3', priority: 'high',
+    q: 'What is a WBS (Work Breakdown Structure)?',
+    a: 'A <strong>WBS</strong> decomposes the total project scope into smaller, manageable work packages. It is hierarchical: from the overall project goal down to individual tasks. Each work package should be:<ul><li>Clearly defined with deliverables</li><li>Assigned to a responsible party</li><li>Estimable in terms of effort, cost, and time</li></ul>The WBS forms the basis for scheduling, resource planning, and cost estimation.'
+  },
+  {
+    area: 'practice', ce: '4.5.4', priority: 'high',
+    q: 'What is the Critical Path Method (CPM)?',
+    a: 'A scheduling technique that identifies the <strong>longest sequence of dependent activities</strong> (the critical path) — which determines the minimum project duration. Any delay on the critical path delays the whole project. Activities not on the critical path have "float" (slack time). Used alongside network diagrams and Gantt charts.'
+  },
+  {
+    area: 'practice', ce: '4.5.4', priority: 'high',
+    q: 'What is a Gantt chart and what is it used for?',
+    a: 'A <strong>Gantt chart</strong> is a bar chart showing project activities over time. It visualises:<ul><li>Task durations and sequencing</li><li>Start and end dates</li><li>Dependencies between tasks</li><li>Milestones</li><li>Current progress vs plan</li></ul>It is the most widely used project scheduling tool.'
+  },
+  {
+    area: 'practice', ce: '4.5.5', priority: 'high',
+    q: 'What is a RACI matrix?',
+    a: 'A <strong>RACI matrix</strong> (Responsibility Assignment Matrix) defines roles for each task:<ul><li><strong>R</strong>esponsible — does the work</li><li><strong>A</strong>ccountable — owns the outcome (only one per task)</li><li><strong>C</strong>onsulted — provides input</li><li><strong>I</strong>nformed — kept updated</li></ul>Ensures clarity of responsibility across team members and avoids duplication or gaps.'
+  },
+  {
+    area: 'practice', ce: '4.5.6', priority: 'high',
+    q: 'What are the three components of quality management in projects?',
+    a: '<ul><li><strong>Quality Planning</strong> — defining quality standards and acceptance criteria at the start</li><li><strong>Quality Assurance (QA)</strong> — systematic reviews to ensure processes are followed correctly (proactive)</li><li><strong>Quality Control (QC)</strong> — inspection and testing of deliverables to verify they meet standards (reactive)</li></ul>Quality gates are checkpoints where deliverables are reviewed before moving to the next phase.'
+  },
+  {
+    area: 'practice', ce: '4.5.7', priority: 'high',
+    q: 'What is Earned Value Analysis (EVA/EVM)?',
+    a: 'A method for measuring project performance by integrating scope, time, and cost:<ul><li><strong>PV</strong> (Planned Value) — budget for work scheduled</li><li><strong>EV</strong> (Earned Value) — budget for work actually completed</li><li><strong>AC</strong> (Actual Cost) — actual cost incurred</li><li><strong>SV</strong> = EV − PV (Schedule Variance)</li><li><strong>CV</strong> = EV − AC (Cost Variance)</li></ul>Positive = ahead of schedule / under budget. Negative = behind / over budget.'
+  },
+  {
+    area: 'practice', ce: '4.5.10', priority: 'high',
+    q: 'What is the process for managing changes in a project?',
+    a: '<ul><li><strong>Identify</strong> the change request</li><li><strong>Analyse</strong> its impact on time, cost, scope, and quality</li><li><strong>Decide</strong> — accept, reject, or defer (usually by steering committee)</li><li><strong>Implement</strong> if approved, updating all affected plans</li><li><strong>Document</strong> all changes in a change log</li></ul>Uncontrolled changes = scope creep, which is a leading cause of project failure.'
+  },
+  {
+    area: 'practice', ce: '4.5.11', priority: 'high',
+    q: 'What are the 4 risk response strategies?',
+    a: '<ul><li><strong>Avoid</strong> — eliminate the risk by changing the plan (e.g. remove the risky activity)</li><li><strong>Transfer</strong> — shift the risk to a third party (e.g. insurance, contract clause)</li><li><strong>Reduce/Mitigate</strong> — take action to lower probability or impact</li><li><strong>Accept</strong> — acknowledge the risk and do nothing (suitable for low-impact risks)</li></ul>For opportunities: exploit, share, enhance, or accept.'
+  },
+  {
+    area: 'practice', ce: '4.5.11', priority: 'high',
+    q: 'What is a Risk Register and what does it contain?',
+    a: 'A <strong>Risk Register</strong> is a document tracking all identified risks. It typically contains:<ul><li>Risk ID and description</li><li>Probability (likelihood) of occurrence</li><li>Impact (severity) if it occurs</li><li>Risk score (Probability × Impact)</li><li>Response strategy and actions</li><li>Risk owner</li><li>Status / residual risk</li></ul>'
+  },
+  {
+    area: 'practice', ce: '4.5.11', priority: 'high',
+    q: 'What is a Likelihood/Impact Matrix in risk management?',
+    a: 'A grid plotting risks by their <strong>probability of occurrence</strong> (Y-axis) and <strong>impact on the project</strong> (X-axis). Risks in the top-right (high probability, high impact) are critical priorities. Used to visually prioritise risks for response planning. Also called a heat map or risk matrix.'
+  },
+  {
+    area: 'practice', ce: '4.5.12', priority: 'high',
+    q: 'What is a Stakeholder Analysis and how is it structured?',
+    a: 'A <strong>Stakeholder Analysis</strong> identifies and assesses all parties with an interest in the project. Typical tools:<ul><li><strong>Power/Interest Grid</strong> — plots stakeholders by their power and interest level: manage closely (high/high), keep satisfied (high/low), keep informed (low/high), monitor (low/low)</li><li>Assess each stakeholder\'s attitude (positive/neutral/negative)</li><li>Define engagement strategy for each</li></ul>'
+  },
+  {
+    area: 'practice', ce: '4.5.12', priority: 'high',
+    q: 'What is the relationship between stakeholder satisfaction and project success?',
+    a: 'A project can meet the magic triangle (time/cost/scope) and still be considered <strong>unsuccessful</strong> if key stakeholders are dissatisfied. Soft criteria — stakeholder perceptions and satisfaction — are equally important to hard criteria. Project success requires that the <strong>most important stakeholders evaluate the project positively</strong> at the end.'
+  },
+  {
+    area: 'practice', ce: '4.5.13', priority: 'med',
+    q: 'What is Change and Transformation management in projects (CE 4.5.13)?',
+    a: 'Projects often trigger <strong>organisational change</strong>. The PM must manage the transition — helping people adapt to new processes, systems, or structures. Key considerations: communication, managing resistance, supporting affected employees, and ensuring the changes are embedded after the project closes. Change management is closely linked to stakeholder management.'
+  },
+  {
+    area: 'practice', ce: '4.5.1', priority: 'med',
+    q: 'What are the 5 phases of the project lifecycle?',
+    a: '<ul><li><strong>Initialisation</strong> — project idea, feasibility; business case created</li><li><strong>Definition</strong> — project charter, organisation, stakeholders, requirements defined</li><li><strong>Planning</strong> — scope, time, cost, resources, risk all planned in detail</li><li><strong>Steering/Execution</strong> — work is done; progress monitored and controlled</li><li><strong>Closure</strong> — deliverables accepted, lessons learned, team disbanded</li></ul>'
+  },
+  {
+    area: 'practice', ce: '4.5.9', priority: 'med',
+    q: 'What is a Make-or-Buy decision in procurement?',
+    a: 'A fundamental decision: should the project <strong>produce something internally</strong> (make) or <strong>purchase it from an external supplier</strong> (buy)? Factors include: cost, capability, available resources, strategic importance, time, and risk. External procurement requires contract management and supplier selection.'
+  },
+];
+
+// State
+let currentDeck = [];
+let currentIndex = 0;
+let isFlipped = false;
+let scores = {};
+let activeFilter = 'all';
+
+function loadScores() {
+  try { return JSON.parse(localStorage.getItem('ipma_flash_scores') || '{}'); } catch { return {}; }
+}
+
+function saveScores() {
+  try { localStorage.setItem('ipma_flash_scores', JSON.stringify(scores)); } catch {}
+}
+
+function buildDeck(filter) {
+  if (filter === 'all') return [...ALL_CARDS];
+  if (filter === 'perspective') return ALL_CARDS.filter(c => c.area === 'perspective');
+  if (filter === 'people') return ALL_CARDS.filter(c => c.area === 'people');
+  if (filter === 'practice') return ALL_CARDS.filter(c => c.area === 'practice');
+  if (filter === 'starred') return ALL_CARDS.filter(c => c.priority === 'high');
+  if (filter === 'unsure') return ALL_CARDS.filter(c => scores[cardKey(c)] === 'unsure');
+  return [...ALL_CARDS];
+}
+
+function cardKey(card) {
+  return card.ce + '_' + card.q.substring(0, 20);
+}
+
+function setFilter(filter, btn) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  activeFilter = filter;
+  currentDeck = buildDeck(filter);
+  currentIndex = 0;
+  isFlipped = false;
+  renderCard();
+  updateDots();
+  updateHeader();
+}
+
+function renderCard() {
+  const completeCard = document.getElementById('completeCard');
+  const cardArea = document.getElementById('cardArea');
+  const feedbackRow = document.getElementById('feedbackRow');
+  const mainControls = document.getElementById('mainControls');
+
+  if (currentDeck.length === 0) {
+    cardArea.style.display = 'none';
+    completeCard.classList.remove('show');
+    document.getElementById('cardCounter').textContent = 'No cards in this filter';
+    feedbackRow.style.display = 'none';
+    return;
+  }
+
+  if (currentIndex >= currentDeck.length) {
+    cardArea.style.display = 'none';
+    completeCard.classList.add('show');
+    const known = currentDeck.filter(c => scores[cardKey(c)] === 'known').length;
+    const unsure = currentDeck.filter(c => scores[cardKey(c)] === 'unsure').length;
+    document.getElementById('finalKnown').textContent = known;
+    document.getElementById('finalUnsure').textContent = unsure;
+    document.getElementById('finalSkipped').textContent = currentDeck.length - known - unsure;
+    feedbackRow.style.display = 'none';
+    return;
+  }
+
+  completeCard.classList.remove('show');
+  cardArea.style.display = 'block';
+
+  const card = currentDeck[currentIndex];
+  const key = cardKey(card);
+
+  // Reset flip
+  isFlipped = false;
+  cardArea.classList.remove('flipped');
+
+  document.getElementById('areaBadge').textContent = card.area.charAt(0).toUpperCase() + card.area.slice(1);
+  document.getElementById('areaBadge').className = 'area-badge ' + card.area;
+  document.getElementById('ceBadge').textContent = 'CE ' + card.ce;
+  document.getElementById('questionText').textContent = card.q;
+  document.getElementById('answerText').innerHTML = card.a;
+
+  // Show feedback only after flip
+  feedbackRow.style.display = 'none';
+
+  // Update counter
+  document.getElementById('cardCounter').textContent = `Card ${currentIndex + 1} of ${currentDeck.length}`;
+
+  // Progress
+  const done = currentDeck.filter((c, i) => i < currentIndex).length;
+  const pct = currentDeck.length ? (done / currentDeck.length) * 100 : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `${done} / ${currentDeck.length}`;
+
+  updateDots();
+}
+
+function flipCard() {
+  const cardArea = document.getElementById('cardArea');
+  const feedbackRow = document.getElementById('feedbackRow');
+  if (currentIndex >= currentDeck.length) return;
+
+  isFlipped = !isFlipped;
+  if (isFlipped) {
+    cardArea.classList.add('flipped');
+    feedbackRow.style.display = 'flex';
+  } else {
+    cardArea.classList.remove('flipped');
+    feedbackRow.style.display = 'none';
+  }
+}
+
+function markCard(result) {
+  if (currentIndex >= currentDeck.length) return;
+  const card = currentDeck[currentIndex];
+  scores[cardKey(card)] = result;
+  saveScores();
+  updateHeader();
+  nextCard();
+}
+
+function nextCard() {
+  if (currentIndex < currentDeck.length) {
+    currentIndex++;
+  }
+  renderCard();
+}
+
+function prevCard() {
+  if (currentIndex > 0) currentIndex--;
+  renderCard();
+}
+
+function shuffleDeck() {
+  for (let i = currentDeck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [currentDeck[i], currentDeck[j]] = [currentDeck[j], currentDeck[i]];
+  }
+  currentIndex = 0;
+  renderCard();
+}
+
+function restartDeck() {
+  currentIndex = 0;
+  renderCard();
+  document.getElementById('completeCard').classList.remove('show');
+  document.getElementById('cardArea').style.display = 'block';
+}
+
+function resetProgress() {
+  if (confirm('Reset all Known/Review scores?')) {
+    scores = {};
+    saveScores();
+    updateHeader();
+    renderCard();
+    updateDots();
+  }
+}
+
+function updateHeader() {
+  document.getElementById('deckSize').textContent = currentDeck.length;
+  const known = Object.values(scores).filter(v => v === 'known').length;
+  const unsure = Object.values(scores).filter(v => v === 'unsure').length;
+  document.getElementById('knownCount').textContent = known;
+  document.getElementById('unsureCount').textContent = unsure;
+}
+
+function updateDots() {
+  const container = document.getElementById('cardDots');
+  const max = Math.min(currentDeck.length, 50);
+  container.innerHTML = '';
+  for (let i = 0; i < max; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot';
+    const card = currentDeck[i];
+    if (card) {
+      const s = scores[cardKey(card)];
+      if (s === 'known') dot.classList.add('known');
+      else if (s === 'unsure') dot.classList.add('unsure');
+    }
+    if (i === currentIndex) dot.classList.add('current');
+    container.appendChild(dot);
+  }
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'l') nextCard();
+  if (e.key === 'ArrowLeft' || e.key === 'h') prevCard();
+  if (e.key === ' ' || e.key === 'f') { e.preventDefault(); flipCard(); }
+  if (e.key === 'k' && isFlipped) markCard('known');
+  if (e.key === 'u' && isFlipped) markCard('unsure');
+});
+
+// Init
+scores = loadScores();
+currentDeck = buildDeck('all');
+renderCard();
+updateHeader();
+</script>
+</body>
+</html>
